@@ -369,9 +369,42 @@ homepage_html(HTML) :-
             background: var(--card-bg);
             border-radius: var(--radius);
             box-shadow: var(--shadow);
-            padding: 24px;
             position: sticky;
             top: 100px;
+            max-height: calc(100vh - 120px);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .filter-panel-scroll {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px 24px 8px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--border) transparent;
+        }
+
+        .filter-panel-scroll::-webkit-scrollbar {
+            width: 5px;
+        }
+
+        .filter-panel-scroll::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .filter-panel-scroll::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 10px;
+        }
+
+        .filter-panel-actions {
+            padding: 12px 24px 16px;
+            border-top: 1px solid var(--border);
+            background: var(--card-bg);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
         }
 
         .filter-panel h3 {
@@ -459,7 +492,6 @@ homepage_html(HTML) :-
             font-weight: 600;
             cursor: pointer;
             transition: background 0.2s, transform 0.1s;
-            margin-top: 8px;
         }
 
         .btn-search:hover { background: var(--primary-dark); }
@@ -476,7 +508,6 @@ homepage_html(HTML) :-
             font-weight: 500;
             cursor: pointer;
             transition: all 0.2s;
-            margin-top: 8px;
         }
 
         .btn-reset:hover {
@@ -912,6 +943,11 @@ homepage_html(HTML) :-
 
             .filter-panel {
                 position: static;
+                max-height: none;
+            }
+
+            .filter-panel-scroll {
+                overflow-y: visible;
             }
 
             .form-grid {
@@ -982,87 +1018,91 @@ homepage_html(HTML) :-
             <div class="search-layout">
                 <!-- Filter Panel -->
                 <div class="filter-panel">
-                    <h3>&#9881; Search Filters</h3>
+                    <div class="filter-panel-scroll">
+                        <h3>&#9881; Search Filters</h3>
 
-                    <div class="filter-group">
-                        <label>University</label>
-                        <select id="filterUniversity">
-                            <option value="moratuwa" selected>University of Moratuwa</option>
-                            <option value="colombo">University of Colombo</option>
-                            <option value="kelaniya">University of Kelaniya</option>
-                            <option value="jayewardenepura">University of Sri Jayewardenepura</option>
-                            <option value="peradeniya">University of Peradeniya</option>
-                            <option value="any">All Universities</option>
-                        </select>
-                    </div>
+                        <div class="filter-group">
+                            <label>University</label>
+                            <select id="filterUniversity">
+                                <option value="moratuwa" selected>University of Moratuwa</option>
+                                <option value="colombo">University of Colombo</option>
+                                <option value="kelaniya">University of Kelaniya</option>
+                                <option value="jayewardenepura">University of Sri Jayewardenepura</option>
+                                <option value="peradeniya">University of Peradeniya</option>
+                                <option value="any">All Universities</option>
+                            </select>
+                        </div>
 
-                    <div class="filter-group">
-                        <label>Price Range (LKR/month)</label>
-                        <div class="price-range">
-                            <input type="number" id="filterMinPrice" placeholder="Min" min="0" step="1000">
-                            <input type="number" id="filterMaxPrice" placeholder="Max" min="0" step="1000">
+                        <div class="filter-group">
+                            <label>Price Range (LKR/month)</label>
+                            <div class="price-range">
+                                <input type="number" id="filterMinPrice" placeholder="Min" min="0" step="1000">
+                                <input type="number" id="filterMaxPrice" placeholder="Max" min="0" step="1000">
+                            </div>
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Max Distance (km)</label>
+                            <select id="filterDistance">
+                                <option value="">Any Distance</option>
+                                <option value="0.5">Within 0.5 km</option>
+                                <option value="1">Within 1 km</option>
+                                <option value="2">Within 2 km</option>
+                                <option value="3">Within 3 km</option>
+                                <option value="5">Within 5 km</option>
+                                <option value="10">Within 10 km</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Room Type</label>
+                            <select id="filterRoomType">
+                                <option value="any">Any</option>
+                                <option value="single">Single Room</option>
+                                <option value="shared">Shared Room</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Min Bathrooms</label>
+                            <select id="filterBathrooms">
+                                <option value="">Any</option>
+                                <option value="1">At least 1</option>
+                                <option value="2">At least 2</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Gender Preference</label>
+                            <select id="filterGender">
+                                <option value="any">Any</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+
+                        <div class="filter-group">
+                            <label>Required Facilities</label>
+                            <div class="facilities-grid" id="filterFacilities">
+                                <label class="facility-check"><input type="checkbox" value="wifi"> WiFi</label>
+                                <label class="facility-check"><input type="checkbox" value="ac"> A/C</label>
+                                <label class="facility-check"><input type="checkbox" value="furniture"> Furniture</label>
+                                <label class="facility-check"><input type="checkbox" value="kitchen"> Kitchen</label>
+                                <label class="facility-check"><input type="checkbox" value="parking"> Parking</label>
+                                <label class="facility-check"><input type="checkbox" value="laundry"> Laundry</label>
+                                <label class="facility-check"><input type="checkbox" value="hot_water"> Hot Water</label>
+                                <label class="facility-check"><input type="checkbox" value="study_room"> Study Room</label>
+                                <label class="facility-check"><input type="checkbox" value="cctv"> CCTV</label>
+                                <label class="facility-check"><input type="checkbox" value="generator"> Generator</label>
+                                <label class="facility-check"><input type="checkbox" value="meals"> Meals</label>
+                            </div>
                         </div>
                     </div>
 
-                    <div class="filter-group">
-                        <label>Max Distance (km)</label>
-                        <select id="filterDistance">
-                            <option value="">Any Distance</option>
-                            <option value="0.5">Within 0.5 km</option>
-                            <option value="1">Within 1 km</option>
-                            <option value="2">Within 2 km</option>
-                            <option value="3">Within 3 km</option>
-                            <option value="5">Within 5 km</option>
-                            <option value="10">Within 10 km</option>
-                        </select>
+                    <div class="filter-panel-actions">
+                        <button class="btn-search" onclick="performSearch()">&#128269; Search Boardings</button>
+                        <button class="btn-reset" onclick="resetFilters()">Reset Filters</button>
                     </div>
-
-                    <div class="filter-group">
-                        <label>Room Type</label>
-                        <select id="filterRoomType">
-                            <option value="any">Any</option>
-                            <option value="single">Single Room</option>
-                            <option value="shared">Shared Room</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>Min Bathrooms</label>
-                        <select id="filterBathrooms">
-                            <option value="">Any</option>
-                            <option value="1">At least 1</option>
-                            <option value="2">At least 2</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>Gender Preference</label>
-                        <select id="filterGender">
-                            <option value="any">Any</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                        </select>
-                    </div>
-
-                    <div class="filter-group">
-                        <label>Required Facilities</label>
-                        <div class="facilities-grid" id="filterFacilities">
-                            <label class="facility-check"><input type="checkbox" value="wifi"> WiFi</label>
-                            <label class="facility-check"><input type="checkbox" value="ac"> A/C</label>
-                            <label class="facility-check"><input type="checkbox" value="furniture"> Furniture</label>
-                            <label class="facility-check"><input type="checkbox" value="kitchen"> Kitchen</label>
-                            <label class="facility-check"><input type="checkbox" value="parking"> Parking</label>
-                            <label class="facility-check"><input type="checkbox" value="laundry"> Laundry</label>
-                            <label class="facility-check"><input type="checkbox" value="hot_water"> Hot Water</label>
-                            <label class="facility-check"><input type="checkbox" value="study_room"> Study Room</label>
-                            <label class="facility-check"><input type="checkbox" value="cctv"> CCTV</label>
-                            <label class="facility-check"><input type="checkbox" value="generator"> Generator</label>
-                            <label class="facility-check"><input type="checkbox" value="meals"> Meals</label>
-                        </div>
-                    </div>
-
-                    <button class="btn-search" onclick="performSearch()">&#128269; Search Boardings</button>
-                    <button class="btn-reset" onclick="resetFilters()">Reset Filters</button>
                 </div>
 
                 <!-- Results Area -->
