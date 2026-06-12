@@ -550,6 +550,7 @@ homepage_html(HTML) :-
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
             gap: 18px;
+            align-items: start;
         }
 
         .boarding-card {
@@ -689,6 +690,31 @@ homepage_html(HTML) :-
             font-weight: 600;
             font-size: 13px;
         }
+
+        .card-details {
+            margin-top: 10px;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .card-toggle {
+            width: 100%;
+            background: none;
+            border: none;
+            border-top: 1px solid var(--border);
+            padding: 8px 18px;
+            cursor: pointer;
+            color: var(--primary);
+            font-size: 13px;
+            font-weight: 500;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.15s;
+        }
+
+        .card-toggle:hover { background: var(--primary-light); }
 
         .badge {
             display: inline-block;
@@ -1506,6 +1532,15 @@ homepage_html(HTML) :-
             return "&#9733;".repeat(full) + (half ? "&#9734;" : "") + "&#9734;".repeat(empty);
         }
 
+        function toggleCard(btn) {
+            const details = btn.closest(".boarding-card").querySelector(".card-details");
+            const expanded = details.style.display !== "none";
+            details.style.display = expanded ? "none" : "block";
+            btn.setAttribute("aria-expanded", !expanded);
+            btn.querySelector(".toggle-text").textContent = expanded ? "Show more" : "Show less";
+            btn.querySelector(".toggle-icon").textContent = expanded ? "\u25bc" : "\u25b2";
+        }
+
         function renderCards(container, boardings, showScore) {
             if (boardings.length === 0) {
                 container.innerHTML = \'<div class="empty-state"><div class="icon">&#128269;</div><h3>No Boardings Found</h3><p>Try adjusting your filters to see more results.</p></div>\';
@@ -1531,17 +1566,20 @@ homepage_html(HTML) :-
                     \'<div class="card-body">\' +
                         \'<div class="card-price">LKR \' + Number(b.price).toLocaleString() + " <span>/month</span></div>" +
                         \'<div class="card-meta">\' +
-                            \'<div class="meta-item"><div class="meta-icon">&#128207;</div><div><span class="meta-label">Distance</span><span class="meta-value">\' + b.distance + " km</span></div></div>" +
                             \'<div class="meta-item"><div class="meta-icon">&#128719;</div><div><span class="meta-label">Room</span><span class="meta-value">\' + typeBadge + " " + genderBadge + "</span></div></div>" +
-                            \'<div class="meta-item"><div class="meta-icon">&#128701;</div><div><span class="meta-label">Bathrooms</span><span class="meta-value">\' + b.bathrooms + "</span></div></div>" +
-                            \'<div class="meta-item"><div class="meta-icon">&#128101;</div><div><span class="meta-label">Occupants</span><span class="meta-value">Max \' + b.max_occupants + "</span></div></div>" +
+                            \'<div class="meta-item"><div class="meta-icon">&#11088;</div><div><span class="meta-label">Rating</span><span class="meta-value"><span class="stars">\' + renderStars(b.rating) + "</span> " + b.rating + "/5</span></div></div>" +
                         "</div>" +
-                        \'<div class="card-facilities">\' + facTags + "</div>" +
+                        \'<div class="card-details" style="display:none;">\' +
+                            \'<div class="card-meta">\' +
+                                \'<div class="meta-item"><div class="meta-icon">&#128207;</div><div><span class="meta-label">Distance</span><span class="meta-value">\' + b.distance + " km</span></div></div>" +
+                                \'<div class="meta-item"><div class="meta-icon">&#128701;</div><div><span class="meta-label">Bathrooms</span><span class="meta-value">\' + b.bathrooms + "</span></div></div>" +
+                                \'<div class="meta-item"><div class="meta-icon">&#128101;</div><div><span class="meta-label">Occupants</span><span class="meta-value">Max \' + b.max_occupants + "</span></div></div>" +
+                                \'<div class="meta-item"><div class="meta-icon">&#128222;</div><div><span class="meta-label">Contact</span><span class="meta-value">\' + escapeHtml(b.contact) + "</span></div></div>" +
+                            "</div>" +
+                            \'<div class="card-facilities">\' + facTags + "</div>" +
+                        "</div>" +
                     "</div>" +
-                    \'<div class="card-footer">\' +
-                        \'<div class="card-rating"><span class="stars">\' + renderStars(b.rating) + "</span> " + b.rating + "/5</div>" +
-                        \'<div class="card-contact">&#128222; \' + escapeHtml(b.contact) + "</div>" +
-                    "</div>" +
+                    \'<button class="card-toggle" onclick="toggleCard(this)" aria-expanded="false"><span class="toggle-text">Show more</span> <span class="toggle-icon">&#9660;</span></button>\' +
                 "</div>";
             }).join("");
         }

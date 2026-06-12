@@ -28,6 +28,8 @@ The system serves a fully interactive, modern web interface via SWI-Prolog's bui
 
 For a plain-English explanation of how the recommendation engine and filtering pipeline work, see **[SYSTEM.md](SYSTEM.md)**.
 
+For a full technical breakdown of the scoring functions, weight definitions, formulas, and line-by-line references, see **[SCORING.md](SCORING.md)**.
+
 ---
 
 ## File Structure
@@ -281,6 +283,34 @@ Facility matching uses `subset/2`, demonstrating logical subset relationships: a
 
 ### 5. Dynamic Knowledge Base
 `add_boarding/2` uses `assert/1` to extend the knowledge base at runtime, demonstrating Prolog's support for dynamic facts.
+
+---
+
+## Scoring System
+
+The recommendation engine ranks boardings using a **weighted multi-factor score** (0–100):
+
+| Factor | Weight | Predicate | File & Line |
+|--------|--------|-----------|-------------|
+| Price match | **30%** | `price_score/3` | `rules.pl:127` |
+| Distance | **25%** | `distance_score/3` | `rules.pl:149` |
+| Facilities | **25%** | `facility_score/3` | `rules.pl:161` |
+| Rating | **20%** | `rating_score/2` | `rules.pl:178` |
+
+**Master formula** (`rules.pl:124`):
+```prolog
+Score is PScore * 0.30 + DScore * 0.25 + FScore * 0.25 + RScore * 0.20.
+```
+
+All weights are defined in this single line. Each sub-score is independently normalized to 0–100 before combining.
+
+**Scoring pipeline:**
+1. `filter_boardings/2` — hard binary rules eliminate ineligible boardings
+2. `score_boarding/3` — computes the weighted composite score per boarding
+3. `sort/4` — sorts results descending by score
+4. Final scores rounded to 1 decimal place (`rules.pl:199`)
+
+For the full scoring reference including all formulas, constants, and examples, see **[SCORING.md](SCORING.md)**.
 
 ---
 
