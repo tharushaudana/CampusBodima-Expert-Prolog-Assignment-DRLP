@@ -24,6 +24,12 @@ The system serves a fully interactive, modern web interface via SWI-Prolog's bui
 
 ---
 
+## System Explanation
+
+For a plain-English explanation of how the recommendation engine and filtering pipeline work, see **[SYSTEM.md](SYSTEM.md)**.
+
+---
+
 ## File Structure
 
 ```
